@@ -1,107 +1,92 @@
-# Qdrant JDBC Driver for DBeaver
+# Qdrant Driver for DBeaver
 
-Minimal JDBC driver that lets DBeaver browse Qdrant collections and run basic reads.
+JDBC driver that lets DBeaver open Qdrant collections like tables.
 
-The project started as a simple gRPC JDBC bridge and was extended to support the more practical DBeaver case:
+What it does right now:
 
-- Qdrant over REST `http/https`
-- API key authentication
-- self-signed / internal TLS with `verify=false`
-- collection discovery in DBeaver
-- basic `SELECT * FROM <collection>`
+- shows Qdrant collections in DBeaver
+- opens collection data
+- runs basic reads with `SELECT * FROM collection_name`
+- works with REST/HTTPS endpoints
+- supports API key auth
+- supports `verify=false` for self-signed TLS
 
-It is intentionally small and not JDBC-complete.
+This project is intentionally small.
+It is for browsing and simple reads first, not for full SQL compatibility.
 
-## Status
+## The Easy Path
 
-What works now:
+If you just want to make it work in DBeaver:
 
-- driver loading in DBeaver
-- listing Qdrant collections as tables
-- showing columns: `id`, `payload`, `vector`
-- reading points with `SELECT * FROM <collection>`
-- REST mode for `http/https` endpoints
-- gRPC mode for direct Qdrant gRPC endpoints
-- API key support
-- TLS on/off
-- disabled certificate verification for internal/self-signed setups
+1. Download the jar from GitHub `Releases`.
+2. Create a custom `Generic` driver in DBeaver.
+3. Set driver class to `org.qdrant.jdbc.QdrantDriver`.
+4. Add the jar on the `Libraries` tab.
+5. Create a connection with your Qdrant URL and API key.
 
-What does not work yet:
-
-- writes: `INSERT`, `UPDATE`, `DELETE`
-- advanced SQL parsing
-- filtering / pushdown
-- joins
-- prepared statements
-- full JDBC metadata coverage
-
-## Build
-
-Requirements:
-
-- Java 21 installed locally is fine for building
-- output bytecode is compiled with `--release 11`, so the jar is compatible with DBeaver running on Java 17
-
-Build the fat jar:
-
-```bash
-GRADLE_USER_HOME=$PWD/.gradle-local ./gradlew clean shadowJar
-```
-
-Result:
-
-```text
-build/libs/dbeaver-qdrant-plugin-1.0-SNAPSHOT.jar
-```
-
-## Distribution
-
-The repository is set up to publish the jar in two places:
-
-- GitHub Actions `Artifacts` on every push to `main`
-- GitHub `Releases` on tag push like `v0.1.0`
-
-Recommended usage:
-
-- `Artifacts` are for testing CI builds
-- `Releases` are for actual user downloads
-
-To publish a release jar:
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-## DBeaver Setup
-
-Create a new custom driver and configure:
-
-- Driver class: `org.qdrant.jdbc.QdrantDriver`
-- Driver type: `Generic`
-
-Add library:
-
-- `build/libs/dbeaver-qdrant-plugin-1.0-SNAPSHOT.jar`
-
-### Option 1: REST/HTTPS endpoint
-
-Use this when your working Python config looks like:
+If your Qdrant already works from Python like this:
 
 ```python
-QdrantClient(
+from qdrant_client import QdrantClient
+
+client = QdrantClient(
     url="https://localhost:15672",
-    api_key="...",
+    api_key="YOUR_API_KEY",
     https=True,
     verify=False,
 )
 ```
 
-JDBC URL:
+then DBeaver should be configured like this:
 
-```text
-jdbc:qdrant://localhost:15672
-```
+- JDBC URL: `jdbc:qdrant://localhost:15672`
+- `transport=rest`
+- `https=true`
+- `verify=false`
+- `api_key=YOUR_API_KEY`
+
+## Download
+
+Preferred option:
+
+- open GitHub `Releases`
+- download the latest jar
+
+Alternative:
+
+- open GitHub `Actions`
+- open the latest successful run on `main`
+- download the build `Artifact`
+
+Use `Releases` if you are a normal user.
+Use `Artifacts` if you want the freshest CI build.
+
+## DBeaver Setup
+
+### 1. Create Driver
+
+In DBeaver:
+
+1. Open `Database` -> `Driver Manager`
+2. Click `New`
+3. Choose `Generic`
+
+Fill these fields:
+
+- Driver Name: `Qdrant`
+- Class Name: `org.qdrant.jdbc.QdrantDriver`
+
+### 2. Add Jar
+
+Open the `Libraries` tab and add the downloaded jar.
+
+### 3. Create Connection
+
+Create a new connection using that driver.
+
+For a REST/HTTPS Qdrant endpoint, use:
+
+- URL: `jdbc:qdrant://localhost:15672`
 
 Driver properties:
 
@@ -110,36 +95,24 @@ Driver properties:
 - `verify=false`
 - `api_key=YOUR_API_KEY`
 
-You can also use:
+If your certificate is valid and trusted, use:
 
-```text
-jdbc:qdrant:https://localhost:15672?verify=false
-```
+- `verify=true`
 
-but keeping transport explicit in driver properties is clearer:
+If your certificate is self-signed or internal, use:
 
-- `transport=rest`
+- `verify=false`
 
-### Option 2: Direct gRPC endpoint
+### 4. Open Collections
 
-Use this for plain Qdrant gRPC, usually on `6334`.
+After connection:
 
-JDBC URL:
-
-```text
-jdbc:qdrant://127.0.0.1:6334
-```
-
-Optional properties:
-
-- `transport=grpc`
-- `https=true|false`
-- `verify=true|false`
-- `api_key=...`
+- collections should appear as tables
+- opening a table should load points from that collection
 
 ## SQL Support
 
-Currently the driver supports only one query form:
+Currently supported:
 
 ```sql
 SELECT * FROM my_collection
@@ -151,41 +124,140 @@ Returned columns:
 - `payload`
 - `vector`
 
-In REST mode the driver uses:
+Not supported yet:
 
-- `GET /collections`
-- `POST /collections/{name}/points/scroll`
+- `INSERT`
+- `UPDATE`
+- `DELETE`
+- joins
+- arbitrary SQL
+- prepared statements
 
-In gRPC mode it uses:
+## Working Connection Examples
 
-- `listCollections`
-- `scroll`
+### HTTPS + API key + self-signed TLS
 
-## JDBC Properties
+JDBC URL:
 
-Supported driver properties:
+```text
+jdbc:qdrant://localhost:15672
+```
 
-- `api_key`: Qdrant API key
-- `https`: enable TLS
-- `verify`: verify TLS certificates and hostname
-- `transport`: `rest`, `http`, or `grpc`
+Properties:
 
-Selection rules:
+```text
+transport=rest
+https=true
+verify=false
+api_key=YOUR_API_KEY
+```
 
-- `jdbc:qdrant:http://...` or `jdbc:qdrant:https://...` => REST mode
-- `transport=rest` => force REST mode
-- `transport=grpc` => force gRPC mode
-- plain `jdbc:qdrant://host:port` defaults to gRPC unless REST-oriented properties make REST mode a better match
+### HTTPS + API key + trusted certificate
 
-## Notes
+JDBC URL:
 
-- `verify=false` is intended for internal/self-signed environments
-- if your TLS certificate does not include `localhost` in SAN, keep `verify=false` or connect via a hostname that is actually present in the certificate
-- if DBeaver appears to use an old driver version, remove old Qdrant jars from the driver settings and re-add the current jar
+```text
+jdbc:qdrant://qdrant.example.com:443
+```
 
-## Project Layout
+Properties:
 
-Main implementation lives in:
+```text
+transport=rest
+https=true
+verify=true
+api_key=YOUR_API_KEY
+```
+
+### Direct gRPC endpoint
+
+Use this only if you really expose Qdrant gRPC directly.
+
+JDBC URL:
+
+```text
+jdbc:qdrant://127.0.0.1:6334
+```
+
+Properties:
+
+```text
+transport=grpc
+https=false
+```
+
+## Build From Source
+
+Requirements:
+
+- Java installed locally
+- Gradle wrapper is already included
+
+Build:
+
+```bash
+GRADLE_USER_HOME=$PWD/.gradle-local ./gradlew clean shadowJar
+```
+
+Output jar:
+
+```text
+build/libs/dbeaver-qdrant-plugin-1.0-SNAPSHOT.jar
+```
+
+The project builds with Java 21 locally but emits Java 11 bytecode, so the jar works with DBeaver on Java 17.
+
+## Release Flow
+
+This repo is set up like this:
+
+- push to `main` => build jar in GitHub Actions `Artifacts`
+- push tag `v*` => create GitHub `Release` and attach the jar
+
+Create a release:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+## Troubleshooting
+
+### `No subject alternative DNS name matching localhost found`
+
+Your certificate does not contain `localhost`.
+
+Use one of these:
+
+- connect with the real hostname from the certificate
+- set `verify=false`
+
+### `HTTP 404` / `UNIMPLEMENTED`
+
+You are probably hitting a REST endpoint with gRPC mode.
+
+Set:
+
+```text
+transport=rest
+```
+
+### DBeaver still behaves like it uses an old driver
+
+Remove all old Qdrant jars from the driver settings, add only the latest jar, and restart DBeaver.
+
+## What This Project Is
+
+Important expectation setting:
+
+- this is a practical DBeaver bridge for Qdrant
+- it is not a full SQL engine
+- it is not a complete JDBC implementation
+- it is meant to make browsing and simple reads easy
+
+## Project Structure
+
+Main code:
 
 - `src/main/java/org/qdrant/jdbc/QdrantDriver.java`
 - `src/main/java/org/qdrant/jdbc/QdrantConnection.java`
@@ -197,13 +269,11 @@ Build config:
 
 - `build.gradle.kts`
 
-## Next Improvements
+## Next Good Improvements
 
-Reasonable next steps if you continue the project:
-
-- support `SELECT id, payload FROM <collection>`
-- add `LIMIT`
-- add REST pagination support in the result set
-- map payload fields into virtual columns
-- improve DBeaver metadata so table browsing feels more native
-- add tests against a local Qdrant container
+- `LIMIT`
+- selecting specific columns
+- better metadata for DBeaver
+- payload field mapping
+- pagination
+- tests against a real Qdrant container
