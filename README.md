@@ -2,6 +2,10 @@
 
 Open Qdrant in DBeaver without suffering.
 
+Русская инструкция:
+
+- [README.ru.md](/Users/radzhab/IdeaProjects/dbeaver-qdrant-plugin/README.ru.md)
+
 This project gives DBeaver a small JDBC bridge for Qdrant, so collections show up like tables and you can inspect data with normal table browsing or a simple query.
 
 What works:
@@ -87,14 +91,20 @@ In DBeaver:
 2. Click `New`
 3. Choose `Generic`
 
+![Driver manager](docs/screenshots/driver-manager.png)
+
 Set:
 
 - Driver Name: `Qdrant`
 - Class Name: `org.qdrant.jdbc.QdrantDriver`
 
+![Driver settings](docs/screenshots/driver-settings.png)
+
 ### 3. Add the jar
 
 Open the `Libraries` tab and add the downloaded jar.
+
+![Driver libraries](docs/screenshots/driver-libraries.png)
 
 ### 4. Create the connection
 
