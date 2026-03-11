@@ -1,19 +1,19 @@
 # Qdrant Driver для DBeaver
 
-Нормальный способ открыть Qdrant в DBeaver без боли.
+Милый маленький драйвер, чтобы открыть Qdrant в DBeaver и не страдать.
 
-Этот драйвер нужен для простого сценария:
+## ✨ Что он умеет
 
-- увидеть коллекции Qdrant в DBeaver как таблицы
-- открыть данные
-- сделать базовый `SELECT * FROM collection_name`
+- показывает коллекции как таблицы
+- открывает данные в DBeaver
+- работает с `SELECT * FROM collection_name`
+- ходит в Qdrant по `REST/HTTPS`
+- умеет `api_key`
+- умеет `verify=false` для self-signed TLS
 
-Сейчас проект заточен именно под просмотр и простое чтение.
-Не под полный SQL, не под запись, не под магию.
+## 💨 Самый быстрый путь
 
-## За 3 минуты до рабочего коннекта
-
-Если у тебя уже работает такой Python-клиент:
+Если у тебя уже работает такой код:
 
 ```python
 from qdrant_client import QdrantClient
@@ -28,15 +28,9 @@ client = QdrantClient(
 
 то в DBeaver тебе нужен вот такой конфиг:
 
-JDBC URL:
-
 ```text
-jdbc:qdrant://localhost:15672
-```
+JDBC URL: jdbc:qdrant://localhost:15672
 
-Свойства драйвера:
-
-```text
 transport=rest
 https=true
 verify=false
@@ -49,17 +43,15 @@ api_key=YOUR_API_KEY
 org.qdrant.jdbc.QdrantDriver
 ```
 
-Это основной и самый важный happy path.
-
-Вот так примерно должен выглядеть заполненный драйвер:
+Вот так должен выглядеть итог:
 
 ![Готовый конфиг драйвера](docs/screenshots/driver-ready-config.png)
 
-## Как добавить драйвер в DBeaver
+## 🌸 Как добавить драйвер в DBeaver
 
 ### 1. Скачай jar
 
-Лучший вариант:
+Лучше всего:
 
 - открой GitHub `Releases`
 - скачай последний jar
@@ -67,38 +59,51 @@ org.qdrant.jdbc.QdrantDriver
 Если нужен самый свежий билд:
 
 - открой GitHub `Actions`
-- зайди в последний успешный прогон на `main`
+- открой последний успешный прогон
 - скачай `Artifact`
-
-Запомни просто:
-
-- `Releases` для людей
-- `Artifacts` для проверки свежей сборки
 
 ### 2. Открой управление драйверами
 
 В DBeaver:
 
-1. Открой меню `Database`
-2. Нажми `Управление драйверами`
-3. Создай новый драйвер на базе `Generic`
+1. `Database`
+2. `Управление драйверами`
+3. создать новый драйвер на базе `Generic`
 
 ![Управление драйверами](docs/screenshots/driver-manager.png)
 
-Заполни:
+### 3. Заполни настройки драйвера
+
+Поставь:
 
 - Имя драйвера: `Qdrant`
 - Имя класса: `org.qdrant.jdbc.QdrantDriver`
 
+Можно оставить такой шаблон URL:
+
+```text
+jdbc:qdrant:{host}:{port}
+```
+
 ![Настройки драйвера](docs/screenshots/driver-settings.png)
 
-### 3. Добавь jar
+### 4. Добавь jar
 
-Во вкладке `Библиотеки` добавь скачанный jar.
+Открой вкладку `Библиотеки`.
+
+Дальше:
+
+1. нажми `Добавить Файл`
+2. выбери скачанный jar
+3. убедись, что он появился в списке библиотек
+
+![Как добавить jar](docs/screenshots/driver-add-file.png)
+
+После выбора файла должно выглядеть примерно так:
 
 ![Библиотеки драйвера](docs/screenshots/driver-libraries.png)
 
-### 4. Настрой URL
+### 5. Создай подключение
 
 Используй:
 
@@ -106,9 +111,7 @@ org.qdrant.jdbc.QdrantDriver
 jdbc:qdrant://localhost:15672
 ```
 
-### 5. Добавь свойства драйвера
-
-Укажи:
+И добавь свойства драйвера:
 
 ```text
 transport=rest
@@ -117,68 +120,50 @@ verify=false
 api_key=YOUR_API_KEY
 ```
 
-### 6. Проверь, что всё взлетело
+### 6. Готово
 
-Если всё хорошо:
+Если всё ок:
 
 - коллекции появятся как таблицы
 - таблицы будут открываться
 - `SELECT * FROM your_collection` начнёт работать
 
-## Готовые конфиги
+## 🍓 Готовые конфиги
 
 ### HTTPS + API key + self-signed TLS
 
-JDBC URL:
-
 ```text
 jdbc:qdrant://localhost:15672
-```
 
-Свойства:
-
-```text
 transport=rest
 https=true
 verify=false
 api_key=YOUR_API_KEY
 ```
 
-### HTTPS + API key + валидный сертификат
-
-JDBC URL:
+### HTTPS + API key + нормальный сертификат
 
 ```text
 jdbc:qdrant://qdrant.example.com:443
-```
 
-Свойства:
-
-```text
 transport=rest
 https=true
 verify=true
 api_key=YOUR_API_KEY
 ```
 
-### Прямой gRPC endpoint
+### Прямой gRPC
 
-Используй только если у тебя реально открыт gRPC Qdrant, обычно `6334`.
-
-JDBC URL:
+Только если у тебя реально открыт Qdrant gRPC:
 
 ```text
 jdbc:qdrant://127.0.0.1:6334
-```
 
-Свойства:
-
-```text
 transport=grpc
 https=false
 ```
 
-## Что поддерживается по SQL
+## 🧃 Что можно по SQL
 
 Сейчас поддерживается:
 
@@ -186,7 +171,7 @@ https=false
 SELECT * FROM my_collection
 ```
 
-Возвращаются колонки:
+Колонки:
 
 - `id`
 - `payload`
@@ -198,77 +183,59 @@ SELECT * FROM my_collection
 - `UPDATE`
 - `DELETE`
 - `JOIN`
-- подготовленные выражения
-- произвольный SQL
+- сложный SQL
 
-## Если что-то сломалось
+## 🩹 Если сломалось
 
-### Ошибка про `localhost` и сертификат
+### `No subject alternative DNS name matching localhost found`
 
-Если видишь что-то вроде:
+В сертификате нет `localhost`.
 
-```text
-No subject alternative DNS name matching localhost found
-```
+Решение:
 
-значит в сертификате нет `localhost`.
-
-Что делать:
-
-- использовать реальный hostname из сертификата
+- использовать hostname из сертификата
 - или поставить `verify=false`
 
-### Ошибка `HTTP 404` / `UNIMPLEMENTED`
+### `HTTP 404` / `UNIMPLEMENTED`
 
-Обычно это значит, что ты попал в REST endpoint, но драйвер пытается говорить по gRPC.
+Скорее всего, драйвер пытается говорить по gRPC с REST endpoint.
 
-Проверь, что у тебя стоит:
+Проверь:
 
 ```text
 transport=rest
 ```
 
-### DBeaver как будто грузит старую версию драйвера
+### DBeaver грузит старый драйвер
 
-Сделай жёстко:
+Сделай так:
 
-1. удали старые Qdrant jars из настроек драйвера
+1. удали старые Qdrant jars
 2. добавь только новый jar
 3. перезапусти DBeaver
 
-## Как собрать самому
-
-Сборка:
+## 🛠 Сборка
 
 ```bash
 GRADLE_USER_HOME=$PWD/.gradle-local ./gradlew clean shadowJar
 ```
 
-Результат:
+Готовый jar:
 
 ```text
 build/libs/dbeaver-qdrant-plugin-1.0-SNAPSHOT.jar
 ```
 
-Проект локально собирается на Java 21, но отдаёт байткод Java 11, поэтому jar нормально грузится в DBeaver на Java 17.
-
-## Как публикуется jar
+## 🚀 Публикация
 
 В репе настроено так:
 
-- push в `main` => jar попадает в GitHub Actions `Artifacts`
-- push тега `v*` => создаётся GitHub `Release` и jar прикладывается туда
+- push в `main` => jar в GitHub Actions `Artifacts`
+- push тега `v*` => GitHub `Release` с jar
 
-Создать релиз:
+Тег релиза:
 
 ```bash
 git tag v0.1.0
 git push origin v0.1.0
 ```
-
-## Что это за проект по-честному
-
-- это практичный мост между Qdrant и DBeaver
-- это не полноценная SQL-база
-- это не полный JDBC-драйвер
-- это удобный способ быстро посмотреть данные
