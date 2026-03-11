@@ -4,7 +4,7 @@ Open Qdrant in DBeaver without suffering.
 
 Русская инструкция:
 
-- [README.ru.md](/Users/radzhab/IdeaProjects/dbeaver-qdrant-plugin/README.ru.md)
+- [README.ru.md](README.ru.md)
 
 This project gives DBeaver a small JDBC bridge for Qdrant, so collections show up like tables and you can inspect data with normal table browsing or a simple query.
 
