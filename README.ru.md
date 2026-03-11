@@ -81,7 +81,7 @@ org.qdrant.jdbc.QdrantDriver
 jdbc:qdrant:{host}:{port}
 ```
 
-![Настройки драйвера](docs/screenshots/driver-settings.png)
+![Настройки драйвера](docs/screenshots/driver-libraries.png)
 
 ### 4. Добавь jar
 
@@ -94,10 +94,6 @@ jdbc:qdrant:{host}:{port}
 3. убедись, что он появился в списке библиотек
 
 ![Как добавить jar](docs/screenshots/driver-add-file.png)
-
-После выбора файла должно выглядеть примерно так:
-
-![Библиотеки драйвера](docs/screenshots/driver-libraries.png)
 
 ### 5. Создай подключение
 

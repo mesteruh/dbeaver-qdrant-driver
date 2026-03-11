@@ -5,8 +5,8 @@
 Ожидаемые имена файлов:
 
 - `driver-manager.png`
-- `driver-settings.png`
+- `driver-libraries.png` — окно настроек драйвера
 - `driver-add-file.png`
-- `driver-libraries.png`
 - `connection-main.png`
 - `connection-driver-properties.png`
+- `driver-ready-config.png`

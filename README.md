@@ -92,7 +92,7 @@ You can keep this URL template:
 jdbc:qdrant:{host}:{port}
 ```
 
-![Driver settings](docs/screenshots/driver-settings.png)
+![Driver settings](docs/screenshots/driver-libraries.png)
 
 ### 4. Add the jar
 
@@ -105,10 +105,6 @@ Then:
 3. make sure it appears in the library list
 
 ![How to add the jar](docs/screenshots/driver-add-file.png)
-
-After that it should look like this:
-
-![Driver libraries](docs/screenshots/driver-libraries.png)
 
 ### 5. Create the connection
 
