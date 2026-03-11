@@ -43,10 +43,6 @@ api_key=YOUR_API_KEY
 org.qdrant.jdbc.QdrantDriver
 ```
 
-Вот так должен выглядеть итог:
-
-![Готовый конфиг драйвера](docs/screenshots/driver-ready-config.png)
-
 ## 🌸 Как добавить драйвер в DBeaver
 
 ### 1. Скачай jar
@@ -111,6 +107,10 @@ jdbc:qdrant:{host}:{port}
 jdbc:qdrant://localhost:15672
 ```
 
+Вот так выглядит основная вкладка подключения:
+
+![Основные настройки подключения](docs/screenshots/connection-main.png)
+
 И добавь свойства драйвера:
 
 ```text
@@ -119,6 +119,10 @@ https=true
 verify=false
 api_key=YOUR_API_KEY
 ```
+
+Во вкладке `Свойства драйвера` должно быть примерно так:
+
+![Свойства драйвера в подключении](docs/screenshots/connection-driver-properties.png)
 
 ### 6. Готово
 

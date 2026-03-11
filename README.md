@@ -49,10 +49,6 @@ Driver class:
 org.qdrant.jdbc.QdrantDriver
 ```
 
-Final result should look roughly like this:
-
-![Ready driver config](docs/screenshots/driver-ready-config.png)
-
 ## Add it to DBeaver
 
 ### 1. Download the jar
@@ -122,6 +118,10 @@ Use:
 jdbc:qdrant://localhost:15672
 ```
 
+This is how the main connection tab should look:
+
+![Main connection settings](docs/screenshots/connection-main.png)
+
 And set these driver properties:
 
 ```text
@@ -130,6 +130,10 @@ https=true
 verify=false
 api_key=YOUR_API_KEY
 ```
+
+And this is how the driver properties tab should look:
+
+![Connection driver properties](docs/screenshots/connection-driver-properties.png)
 
 ### 6. Done
 
